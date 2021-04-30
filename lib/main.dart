@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+import 'package:flutter_pro_responsive_app/pages/home.dart';
+import 'package:flutter_pro_responsive_app/pages/chat.dart';
 
 void main() {
   runApp(App());
@@ -7,16 +11,20 @@ void main() {
 class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        systemNavigationBarColor: Colors.grey[850], // From Dark ThemeData.
+      ),
+    );
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomePage(),
+      theme: ThemeData.dark(),
+      routes: {
+        HomePage.routeName: (_) => HomePage(),
+        ChatPage.routeName: (_) => ChatPage(),
+      },
+      initialRoute: HomePage.routeName,
     );
-  }
-}
-
-class HomePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold();
   }
 }
