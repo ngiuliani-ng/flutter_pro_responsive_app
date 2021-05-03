@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_pro_responsive_app/models/contact.dart';
 
-import 'package:flutter_pro_responsive_app/pages/chat.dart';
-
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   static String routeName = '/home';
 
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   final List<ContactModel> contacts = [
     ContactModel(
       user: 'Nicolò Giuliani',
@@ -50,15 +53,34 @@ class HomePage extends StatelessWidget {
     ),
   ];
 
+  ContactModel selectedContact;
+
+  void selectContact(ContactModel contact) {
+    setState(() {
+      selectedContact = contact;
+    });
+  }
+
+  void deselectContact() {
+    setState(() {
+      selectedContact = null;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    // TODO: Responsive Design.
+    return selectedContact != null ? buildChat() : buildPreview();
+  }
+
+  Widget buildPreview() {
     return Scaffold(
-      appBar: appBar(),
-      body: body(context),
+      appBar: appBarPreview(),
+      body: bodyPreview(),
     );
   }
 
-  Widget appBar() {
+  Widget appBarPreview() {
     return AppBar(
       elevation: 0,
       title: Text('Messages'),
@@ -66,14 +88,14 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget body(BuildContext context) {
+  Widget bodyPreview() {
     return ListView.builder(
       itemCount: contacts.length,
-      itemBuilder: (context, index) => chat(context, contacts[index]),
+      itemBuilder: (context, index) => chatPreview(contacts[index]),
     );
   }
 
-  Widget chat(BuildContext context, ContactModel contact) {
+  Widget chatPreview(ContactModel contact) {
     return ListTile(
       leading: CircleAvatar(
         backgroundColor: Colors.white12,
@@ -89,13 +111,65 @@ class HomePage extends StatelessWidget {
         contact.messages[contact.messages.length - 1].toString(), // Last.
         overflow: TextOverflow.ellipsis,
       ),
-      onTap: () {
-        Navigator.pushNamed(
-          context,
-          ChatPage.routeName,
-          arguments: contact,
-        );
-      },
+      onTap: () => selectContact(contact),
+    );
+  }
+
+  Widget buildChat() {
+    return Scaffold(
+      appBar: appBarChat(),
+      body: bodyChat(),
+    );
+  }
+
+  Widget appBarChat() {
+    return AppBar(
+      elevation: 0,
+      leading: IconButton(
+        icon: Icon(
+          Icons.arrow_back,
+        ),
+        onPressed: () => deselectContact(),
+      ),
+      title: Text(selectedContact.user),
+    );
+  }
+
+  Widget bodyChat() {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      child: ListView.separated(
+        itemCount: selectedContact.messages.length,
+        itemBuilder: (context, index) => messageChat(index, selectedContact),
+        separatorBuilder: (context, index) => SizedBox(height: 12),
+      ),
+    );
+  }
+
+  Widget messageChat(int index, ContactModel contact) {
+    return Row(
+      children: [
+        CircleAvatar(
+          backgroundColor: Colors.white12,
+          backgroundImage: NetworkImage(contact.avatarUrl),
+        ),
+        SizedBox(
+          width: 12,
+        ),
+        Expanded(
+          child: Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.white12,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Padding(
+              padding: EdgeInsets.all(8),
+              child: Text(contact.messages[index]),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
