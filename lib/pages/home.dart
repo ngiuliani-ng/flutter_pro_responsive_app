@@ -69,8 +69,28 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Responsive Design.
-    return selectedContact != null ? buildChat() : buildPreview();
+    return OrientationBuilder(
+      builder: (context, orientation) {
+        if (orientation == Orientation.portrait) {
+          /// [Orientation.portrait] ---> Verticale.
+          return selectedContact != null ? buildChat(backArrow: true) : buildPreview();
+        } else {
+          /// [Orientation.landscape] ---> Orizzontale.
+          return Row(
+            children: [
+              Expanded(
+                flex: 1,
+                child: buildPreview(),
+              ),
+              Expanded(
+                flex: 2,
+                child: selectedContact != null ? buildChat(backArrow: false) : Scaffold(),
+              ),
+            ],
+          );
+        }
+      },
+    );
   }
 
   Widget buildPreview() {
@@ -89,17 +109,23 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget bodyPreview() {
-    return ListView.builder(
-      itemCount: contacts.length,
-      itemBuilder: (context, index) => chatPreview(contacts[index]),
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 8),
+      child: ListView.builder(
+        itemCount: contacts.length,
+        itemBuilder: (context, index) => chatPreview(contacts[index]),
+      ),
     );
   }
 
   Widget chatPreview(ContactModel contact) {
     return ListTile(
-      leading: CircleAvatar(
-        backgroundColor: Colors.white12,
-        backgroundImage: NetworkImage(contact.avatarUrl),
+      leading: AspectRatio(
+        aspectRatio: 1 / 1,
+        child: CircleAvatar(
+          backgroundColor: Colors.white12,
+          backgroundImage: NetworkImage(contact.avatarUrl),
+        ),
       ),
       title: Text(
         contact.user,
@@ -115,33 +141,67 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget buildChat() {
+  Widget buildChat({@required bool backArrow}) {
     return Scaffold(
-      appBar: appBarChat(),
+      appBar: appBarChat(backArrow),
       body: bodyChat(),
     );
   }
 
-  Widget appBarChat() {
+  Widget appBarChat(bool backArrow) {
     return AppBar(
       elevation: 0,
-      leading: IconButton(
-        icon: Icon(
-          Icons.arrow_back,
-        ),
-        onPressed: () => deselectContact(),
+      leading: backArrow
+          ? IconButton(
+              icon: Icon(
+                Icons.arrow_back,
+              ),
+              onPressed: () => deselectContact(),
+            )
+          : null,
+      title: Row(
+        children: [
+          CircleAvatar(
+            backgroundColor: Colors.white12,
+            backgroundImage: NetworkImage(selectedContact.avatarUrl),
+          ),
+          SizedBox(
+            width: 16,
+          ),
+          Text(selectedContact.user),
+        ],
       ),
-      title: Text(selectedContact.user),
+      actions: MediaQuery.of(context).size.width < 400
+          ? [
+              IconButton(
+                icon: Icon(Icons.more_vert),
+                onPressed: () {},
+              ),
+            ]
+          : [
+              IconButton(
+                icon: Icon(Icons.videocam),
+                onPressed: () {},
+              ),
+              IconButton(
+                icon: Icon(Icons.call),
+                onPressed: () {},
+              ),
+              IconButton(
+                icon: Icon(Icons.more_vert),
+                onPressed: () {},
+              ),
+            ],
     );
   }
 
   Widget bodyChat() {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      padding: EdgeInsets.all(16),
       child: ListView.separated(
         itemCount: selectedContact.messages.length,
         itemBuilder: (context, index) => messageChat(index, selectedContact),
-        separatorBuilder: (context, index) => SizedBox(height: 12),
+        separatorBuilder: (context, index) => SizedBox(height: 16),
       ),
     );
   }
@@ -149,14 +209,8 @@ class _HomePageState extends State<HomePage> {
   Widget messageChat(int index, ContactModel contact) {
     return Row(
       children: [
-        CircleAvatar(
-          backgroundColor: Colors.white12,
-          backgroundImage: NetworkImage(contact.avatarUrl),
-        ),
-        SizedBox(
-          width: 12,
-        ),
         Expanded(
+          flex: 7,
           child: Container(
             width: double.infinity,
             decoration: BoxDecoration(
@@ -167,6 +221,12 @@ class _HomePageState extends State<HomePage> {
               padding: EdgeInsets.all(8),
               child: Text(contact.messages[index]),
             ),
+          ),
+        ),
+        Expanded(
+          flex: 1,
+          child: SizedBox(
+            width: double.infinity,
           ),
         ),
       ],

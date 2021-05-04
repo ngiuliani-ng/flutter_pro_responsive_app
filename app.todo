@@ -3,3 +3,8 @@ App:
         ✔ Sviluppo HomePage. @done(21-04-30 06:33)
         ✔ Sviluppo ChatPage. @done(21-04-30 06:33)
         ✔ Definizione ContactModel. @done(21-04-29 06:24)
+    Responsive Design:
+        ✔ LayoutBuilder @done(21-05-04 06:02)
+        ✔ MediaQuery @done(21-05-04 06:02)
+        ✔ OrientationBuilder @done(21-05-04 06:02)
+        ✔ AspectRatio @done(21-05-04 06:02)
