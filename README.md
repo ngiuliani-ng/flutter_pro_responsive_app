@@ -9,3 +9,5 @@ A new Flutter application. Fudeo exercises.
         - Argument: **Introduzione**
     - Lesson 1.2: https://bit.ly/3u1hgb6
         - Argument: **OrientationBuilder, LayoutBuilder, MediaQuery, AspectRatio**
+            - Screenshot App: Screenshot\Screenshot_1620184345.png - Chat Preview
+            - Screenshot App: Screenshot\Screenshot_1620184351.png - Chat
