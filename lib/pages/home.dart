@@ -69,27 +69,32 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return OrientationBuilder(
-      builder: (context, orientation) {
-        if (orientation == Orientation.portrait) {
-          /// [Orientation.portrait] ---> Verticale.
-          return selectedContact != null ? buildChat(backArrow: true) : buildPreview();
-        } else {
-          /// [Orientation.landscape] ---> Orizzontale.
-          return Row(
-            children: [
-              Expanded(
-                flex: 1,
-                child: buildPreview(),
-              ),
-              Expanded(
-                flex: 2,
-                child: selectedContact != null ? buildChat(backArrow: false) : Scaffold(),
-              ),
-            ],
-          );
-        }
-      },
+    return ResponsiveBuilder(
+      mobileChild: selectedContact != null ? buildChat(backArrow: true) : buildPreview(),
+      tabletChild: Row(
+        children: [
+          Expanded(
+            flex: 1,
+            child: buildPreview(),
+          ),
+          Expanded(
+            flex: 2,
+            child: selectedContact != null ? buildChat(backArrow: false) : Scaffold(),
+          ),
+        ],
+      ),
+      desktopChild: Row(
+        children: [
+          Expanded(
+            flex: 1,
+            child: buildPreview(),
+          ),
+          Expanded(
+            flex: 2,
+            child: selectedContact != null ? buildChat(backArrow: false) : Scaffold(),
+          ),
+        ],
+      ),
     );
   }
 
@@ -231,5 +236,29 @@ class _HomePageState extends State<HomePage> {
         ),
       ],
     );
+  }
+}
+
+class ResponsiveBuilder extends StatelessWidget {
+  final Widget mobileChild;
+  final Widget tabletChild;
+  final Widget desktopChild;
+
+  ResponsiveBuilder({
+    @required this.mobileChild,
+    @required this.tabletChild,
+    @required this.desktopChild,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+
+    if (width < 400)
+      return mobileChild;
+    else if (width >= 400 && width < 1000)
+      return tabletChild;
+    else
+      return desktopChild;
   }
 }
